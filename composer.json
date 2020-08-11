@@ -1,5 +1,5 @@
 {
-    "name": "juraev/git-ci",
+    "name": "juraev/github-ci",
     "description": "Git Ci for php",
     "type": "package",
     "require": {

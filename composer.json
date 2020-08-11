@@ -1,0 +1,22 @@
+{
+    "name": "juraev/git-ci",
+    "description": "Git Ci for php",
+    "type": "package",
+    "require": {
+        "ext-zip": ">= 1.1.0",
+        "php": ">= 5.2"
+    },
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Aziz Juraev",
+            "email": "azizjuraev9@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "juraev\\github_ci\\": "src"
+        }
+    }
+}

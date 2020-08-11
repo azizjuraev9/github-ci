@@ -12,7 +12,8 @@ namespace juraev\github_ci;
 class WebHookHandler
 {
 
-    const EVENT_KEY = 'X-GitHub-Event';
+    const EVENT_KEY = 'X_GITHUB_EVENT';
+    const DELIVERY_KEY = 'X_GITHUB_DELIVERY';
 
     public function getRequest()
     {
@@ -23,7 +24,7 @@ class WebHookHandler
             return [];
         }
 
-        if( !strstr($_SERVER['HTTP_User-Agent'],'GitHub-Hookshot/') )
+        if( !strstr($_SERVER['HTTP_USER_AGENT'],'GitHub-Hookshot/') )
         {
             return [];
         }

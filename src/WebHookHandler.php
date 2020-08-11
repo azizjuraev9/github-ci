@@ -36,7 +36,7 @@ class WebHookHandler
 
         $request[self::EVENT_KEY] = $_SERVER['HTTP_' . self::EVENT_KEY];
 
-        $body = file_get_contents('php:://input');
+        $body = file_get_contents('php://input');
 
         $request['body'] = json_decode($body,true);
 

@@ -20,7 +20,7 @@ class GithubCi
     /**
      * @var bool
      */
-    private $log;
+    private $log = false;
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class GithubCi
     {
         foreach ($config as $key => $value)
         {
-            if( isset( $this->$key ) )
+            if( property_exists(self::class, $key ) )
             {
                 $this->$key = $value;
             }
@@ -58,13 +58,13 @@ class GithubCi
     private function log($data)
     {
 
-        if(!$this->log_dir)
+        if($this->log_dir)
         {
             $log_dir = $this->log_dir;
         }
         else
         {
-            $log_dir = dirname( dirname( dirname( __DIR__ ) ) );
+            $log_dir = dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/git_log';
         }
 
         if( !is_dir($log_dir) )
@@ -74,7 +74,7 @@ class GithubCi
             }
         }
 
-        $data = json_encode($data);
+        $data = json_encode($data, JSON_PRETTY_PRINT) . PHP_EOL;
 
         file_put_contents($log_dir . '/' . $this->log_filename,$data,FILE_APPEND);
 

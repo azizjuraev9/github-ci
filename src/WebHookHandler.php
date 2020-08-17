@@ -14,24 +14,27 @@ class WebHookHandler
 
     const EVENT_KEY = 'X_GITHUB_EVENT';
     const DELIVERY_KEY = 'X_GITHUB_DELIVERY';
+    const PUSH_EVENT = 'push';
 
-    public function getRequest()
+    private $request;
+
+    public function __construct()
     {
         $request = [];
 
         if ( $_SERVER['REQUEST_METHOD'] !== 'POST' )
         {
-            return [];
+            return;
         }
 
         if( !strstr($_SERVER['HTTP_USER_AGENT'],'GitHub-Hookshot/') )
         {
-            return [];
+            return;
         }
 
         if( !isset($_SERVER['HTTP_' . self::EVENT_KEY]) )
         {
-            return [];
+            return;
         }
 
         $request[self::EVENT_KEY] = $_SERVER['HTTP_' . self::EVENT_KEY];
@@ -40,9 +43,25 @@ class WebHookHandler
 
         $request['body'] = json_decode($body,true);
 
-        return $request;
+        $this->request = $request;
     }
 
-//    public function
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    public function getPullRequestRepo()
+    {
+        $request = $this->getRequest();
+
+        if( $request[self::EVENT_KEY] !== self::PUSH_EVENT )
+        {
+            return null;
+        }
+
+        return @$request['body']['repository']['full_name'];
+
+    }
 
 }

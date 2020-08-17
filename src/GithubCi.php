@@ -12,10 +12,27 @@ namespace juraev\github_ci;
 class GithubCi
 {
 
+    const GITHUB_URL = 'https://github.com/';
+
     /**
      * @var string
      */
     private $repository;
+
+    /**
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @var string
+     */
+    private $zipPath;
+
+    /**
+     * @var string
+     */
+    private $branch;
 
     /**
      * @var bool
@@ -46,13 +63,56 @@ class GithubCi
     public function run()
     {
         $handler = new WebHookHandler();
-        $request = $handler->getRequest();
+        $pushRepo = $handler->getPullRequestRepo();
+
+        $result = false;
+        if( $pushRepo === $this->repository)
+        {
+            $url = self::GITHUB_URL . $this->repository;
+            $path = $this->getPath();
+            $zipPath = $this->getZipPath();
+
+            $puller = new ZipPull($url,$path,$zipPath,$this->branch);
+            $result = $puller->pull();
+        }
+
 
         if( $this->log )
         {
-            $this->log($request);
+            $log = [];
+            $log['request'] = $handler->getRequest();
+            $log['result'] = $result;
+            $this->log($log);
         }
 
+        return $result;
+
+    }
+
+    private function getPath()
+    {
+        if($this->path)
+        {
+            $path = $this->path;
+        }
+        else
+        {
+            $path = dirname( dirname( dirname( dirname( __DIR__ ) ) ) );
+        }
+        return $path;
+    }
+
+    private function getZipPath()
+    {
+        if($this->zipPath)
+        {
+            $path = $this->zipPath;
+        }
+        else
+        {
+            $path = dirname( dirname( dirname( dirname( __DIR__ ) ) ) );
+        }
+        return $path;
     }
 
     private function log($data)

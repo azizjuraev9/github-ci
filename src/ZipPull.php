@@ -9,6 +9,8 @@
 namespace juraev\github_ci;
 
 
+use ZipArchive;
+
 class ZipPull
 {
 
@@ -52,6 +54,13 @@ class ZipPull
     public function pull()
     {
         $zipUrl = $this->url . '/archive/' . $this->branch . '.zip';
+
+        $zipFile = $this->getZip($zipUrl,$this->zipPath);
+
+        if( $zipFile === false )
+            return false;
+
+        return $this->unzip($zipFile,$this->path);
     }
 
     /**
@@ -64,13 +73,25 @@ class ZipPull
 
         if( !is_dir( $zipPath ) )
         {
-            mkdir($zipPath, 0777, true);
+            if (!mkdir($zipPath, 0777, true) && !is_dir($zipPath)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $zipPath));
+            }
         }
 
         $file = file_get_contents($url);
 
+        if($file === false)
+        {
+            return false;
+        }
+
         $fileName = $zipPath . '/' . $this->branch . '.zip';
-        file_put_contents($fileName, $file);
+        $res = file_put_contents($fileName, $file);
+
+        if($res === false)
+        {
+            return false;
+        }
 
         return $fileName;
     }
@@ -82,7 +103,14 @@ class ZipPull
      */
     private function unzip($zip, $path)
     {
-
+        $archive = new ZipArchive;
+        $res = $archive->open($zip);
+        if ($res === true) {
+            $archive->extractTo($path);
+            $archive->close();
+            return true;
+        }
+        return false;
     }
 
 }
